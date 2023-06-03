@@ -1,8 +1,10 @@
 package com.tanservices.product;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/product")
@@ -14,8 +16,13 @@ public class ProductController {
     }
 
     @PostMapping("/order-request")
-    public ResponseEntity<Void> orderProduct(@RequestBody ProductOrderRequest productOrderRequest) {
-        productService.placeOrder(productOrderRequest);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<Map<String, String>> orderProduct(@RequestBody OrderRequest[] orderRequests) {
+        ProductOrderRequest productOrderRequest = productService.placeOrder(orderRequests);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("orderUUID", String.valueOf(productOrderRequest.orderUUID()));
+        response.put("invoiceUUID", String.valueOf(productOrderRequest.invoiceUUID()));
+
+        return ResponseEntity.ok(response);
     }
 }

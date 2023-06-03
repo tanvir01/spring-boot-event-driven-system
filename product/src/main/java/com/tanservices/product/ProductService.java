@@ -4,6 +4,9 @@ import com.tanservices.product.exception.InsufficientProductQuantityException;
 import com.tanservices.product.exception.ProductNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class ProductService {
 
@@ -13,20 +16,43 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
-    public void placeOrder(ProductOrderRequest productOrderRequest) {
-        String productId = productOrderRequest.productId();
-        int quantity = productOrderRequest.quantity();
+    public ProductOrderRequest placeOrder(OrderRequest[] orderRequests) {
+        this.checkRequestedProducts(orderRequests);
+        List<ProductOrderInfo> productOrderInfos = new ArrayList<>();
 
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ProductNotFoundException(productId));
 
-        if(product.getQuantity() < quantity) {
-            throw new InsufficientProductQuantityException(productId);
+        for (OrderRequest orderRequest : orderRequests) {
+            String productId = orderRequest.productId();
+            int requestQuantity = orderRequest.quantity();
+
+            Product product = productRepository.findById(productId).get();
+
+            product.setQuantity(product.getQuantity() - requestQuantity);
+            productRepository.save(product);
+
+            productOrderInfos.add(new ProductOrderInfo(product, requestQuantity));
         }
 
-        product.setQuantity(product.getQuantity() - quantity);
-        productRepository.save(product);
+        ProductOrderRequest productOrderRequest = new ProductOrderRequest(productOrderInfos);
 
-        // TODO: more work to be done
+        System.out.println(productOrderRequest);
+
+        // TODO: send productOrderRequest to kafka topic
+
+        return productOrderRequest;
+    }
+
+    private void checkRequestedProducts(OrderRequest[] orderRequests) {
+        for (OrderRequest orderRequest : orderRequests) {
+            String productId = orderRequest.productId();
+            int requestQuantity = orderRequest.quantity();
+
+            Product product = productRepository.findById(productId)
+                    .orElseThrow(() -> new ProductNotFoundException(productId));
+
+            if (product.getQuantity() < requestQuantity) {
+                throw new InsufficientProductQuantityException(productId);
+            }
+        }
     }
 }

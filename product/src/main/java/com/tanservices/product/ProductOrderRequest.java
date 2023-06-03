@@ -1,7 +1,16 @@
 package com.tanservices.product;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
 public record ProductOrderRequest(
-        String productId,
-        int quantity
+        List<ProductOrderInfo> productOrderInfos,
+        UUID orderUUID,
+        UUID invoiceUUID,
+        LocalDateTime createdAt
 ) {
+    public ProductOrderRequest(List<ProductOrderInfo> productOrderInfos) {
+        this(productOrderInfos, UUID.randomUUID(), UUID.randomUUID(), LocalDateTime.now());
+    }
 }
