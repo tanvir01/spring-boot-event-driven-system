@@ -2,7 +2,11 @@ package com.tanservices.product;
 
 import com.tanservices.product.exception.InsufficientProductQuantityException;
 import com.tanservices.product.exception.ProductNotFoundException;
+import com.tanservices.product.producer.ProductOrderInfo;
+import com.tanservices.product.producer.ProductOrderRequest;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,9 +14,13 @@ import java.util.List;
 @Service
 public class ProductService {
 
+    @Value("${kafka-topic-name}")
+    private String topic;
+    private KafkaTemplate<String, ProductOrderRequest> kafkaTemplate;
     private final ProductRepository productRepository;
 
-    public ProductService(ProductRepository productRepository) {
+    public ProductService(KafkaTemplate<String, ProductOrderRequest> kafkaTemplate, ProductRepository productRepository) {
+        this.kafkaTemplate = kafkaTemplate;
         this.productRepository = productRepository;
     }
 
@@ -26,7 +34,6 @@ public class ProductService {
             int requestQuantity = orderRequest.quantity();
 
             Product product = productRepository.findById(productId).get();
-
             product.setQuantity(product.getQuantity() - requestQuantity);
             productRepository.save(product);
 
@@ -37,7 +44,7 @@ public class ProductService {
 
         System.out.println(productOrderRequest);
 
-        // TODO: send productOrderRequest to kafka topic
+        kafkaTemplate.send(topic, productOrderRequest);
 
         return productOrderRequest;
     }

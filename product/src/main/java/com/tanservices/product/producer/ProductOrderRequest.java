@@ -1,4 +1,4 @@
-package com.tanservices.product;
+package com.tanservices.product.producer;
 
 import java.time.LocalDateTime;
 import java.util.List;
