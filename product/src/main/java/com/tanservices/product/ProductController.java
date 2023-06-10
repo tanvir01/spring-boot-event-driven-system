@@ -21,8 +21,8 @@ public class ProductController {
         ProductOrderRequest productOrderRequest = productService.placeOrder(orderRequests);
 
         Map<String, String> response = new HashMap<>();
-        response.put("orderUUID", String.valueOf(productOrderRequest.orderUUID()));
-        response.put("invoiceUUID", String.valueOf(productOrderRequest.invoiceUUID()));
+        response.put("orderID", String.valueOf(productOrderRequest.orderUUID()));
+        response.put("invoiceID", String.valueOf(productOrderRequest.invoiceUUID()));
 
         return ResponseEntity.ok(response);
     }
