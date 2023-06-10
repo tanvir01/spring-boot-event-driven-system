@@ -1,10 +1,12 @@
 package com.tanservices.invoice.consumer;
 
 import com.tanservices.invoice.InvoiceService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class KafkaConsumer {
 
     private final InvoiceService invoiceService;
@@ -16,7 +18,7 @@ public class KafkaConsumer {
     @KafkaListener(topics = "${kafka-topic-name}", groupId = "invoice_group_id", containerFactory = "messageFactory")
     public void consume(ProductOrderRequest productOrderRequest)
     {
-        System.out.println("Listener Received: "+ productOrderRequest);
+        log.info("Listener Received: "+ productOrderRequest);
 
         invoiceService.createInvoice(productOrderRequest);
     }

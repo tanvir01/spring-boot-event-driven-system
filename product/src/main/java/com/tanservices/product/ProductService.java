@@ -4,6 +4,7 @@ import com.tanservices.product.exception.InsufficientProductQuantityException;
 import com.tanservices.product.exception.ProductNotFoundException;
 import com.tanservices.product.producer.ProductOrderInfo;
 import com.tanservices.product.producer.ProductOrderRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 public class ProductService {
 
     @Value("${kafka-topic-name}")
@@ -42,7 +44,7 @@ public class ProductService {
 
         ProductOrderRequest productOrderRequest = new ProductOrderRequest(productOrderInfos);
 
-        System.out.println(productOrderRequest);
+        log.info("ProductOrderRequest: " + productOrderRequest);
 
         kafkaTemplate.send(topic, productOrderRequest);
 
