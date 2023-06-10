@@ -13,7 +13,7 @@ public class KafkaConsumer {
         this.orderService = orderService;
     }
 
-    @KafkaListener(topics = "${kafka-topic-name}", groupId = "group_id", containerFactory = "messageFactory")
+    @KafkaListener(topics = "${kafka-topic-name}", groupId = "order_group_id", containerFactory = "messageFactory")
     public void consume(ProductOrderRequest productOrderRequest)
     {
         System.out.println("Listener Received: "+ productOrderRequest);

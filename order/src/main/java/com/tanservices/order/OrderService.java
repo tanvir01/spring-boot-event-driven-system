@@ -19,7 +19,7 @@ public class OrderService {
         this.orderRepository = orderRepository;
     }
 
-    public Order findByOrderId(UUID orderId) {
+    public Order getOrderById(UUID orderId) {
         Optional<Order> optionalOrder = Optional.ofNullable(orderRepository.findByOrderId(orderId));
         return optionalOrder.orElseThrow(() -> new OrderNotFoundException(orderId));
     }
@@ -33,6 +33,7 @@ public class OrderService {
         double totalPrice = productOrderInfos.stream()
                 .mapToDouble(productOrderInfo -> productOrderInfo.requestQuantity() * productOrderInfo.product().price())
                 .sum();
+        totalPrice = Math.round(totalPrice * 100.0) / 100.0; // round the value to 2 decimal places
 
         orderRepository.save(new Order(orderUUID, totalPrice, createdAt, productOrderInfos));
     }
