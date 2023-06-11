@@ -19,9 +19,11 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import org.springframework.test.context.TestPropertySource;
+
 @SpringBootTest
 @ActiveProfiles("test")
-public class ProductServiceIntegrationTest {
+public class ProductServiceIntegrationTest extends BaseTest{
 
     @MockBean
     private KafkaTemplate<String, ProductOrderRequest> kafkaTemplate;
