@@ -5,6 +5,9 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        mongodb-version: ['latest']
 
     steps:
       - uses: actions/checkout@v2
