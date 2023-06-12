@@ -1,0 +1,37 @@
+name: Run Tests
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        mongodb-version: ['latest']
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.8.0
+        with:
+          mongodb-version: ${{ matrix.mongodb-version }}
+          mongodb-username: supercharge
+          mongodb-password: secret
+          mongodb-db: supercharge
+
+      - name: Check with Gradle
+        run: |
+          cd product
+          ./gradlew check
+          cd ../order
+          ./gradlew check
+          cd ../invoice
+          ./gradlew check
+          cd ../notification
+          ./gradlew check
